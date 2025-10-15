@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ejemplo: Loader con GIF</title>
+  <style>
+    /* Reset sencillo */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Contenedor de la página */
+    body.loading {
+      overflow: hidden; /* evita scroll mientras carga */
+      height: 100vh;
+    }
+
+    /* Overlay del loader */
+    #page-loader {
+      position: fixed;
+      inset: 0; /* top:0; right:0; bottom:0; left:0; */
+      background: rgba(255,255,255,0.95); /* color de fondo del loader */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 400ms ease, visibility 400ms ease;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    /* estado oculto (después de cargar) */
+    #page-loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* Tarjeta interior para centrar y dar estilo si quieres */
+    .loader-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.0); /* transparente por defecto */
+      /* sombra opcional:
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      */
+    }
+
+    /* tamaño responsivo del GIF */
+    .loader-box img {
+      width: clamp(80px, 20vw, 160px); /* mínimo 80px, máximo 160px */
+      height: auto;
+      display: block;
+    }
+
+    /* Texto visible sólo para lectores de pantalla (y opcionalmente visible) */
+    .sr-only {
+      position: absolute !important;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* Contenido de ejemplo de la página */
+    main {
+      min-height: 100vh;
+      padding: 2rem;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg,#f7fafc,#ffffff);
+    }
+
+    /* Hacer una pequeña animación del loader (opcional) */
+    @keyframes floaty {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0); }
+    }
+    .loader-box img { animation: floaty 1200ms ease-in-out infinite; }
+
+    /* Small screens tweak */
+    @media (max-width:480px){
+      .loader-box img { width: 90px; }
+    }
+  </style>
+</head>
+<body class="loading" aria-busy="true">
+
+  <!-- Loader overlay -->
+  <div id="page-loader" role="status" aria-live="polite" aria-label="Cargando el contenido de la página">
+    <div class="loader-box">
+      <!-- Tu GIF -->
+      <img src="https://i.gifer.com/origin/96/9606572270edfa889515dd7219fa1434_w200.webp"
+           alt="Cargando..." />
+      <span class="sr-only">Cargando, por favor espera</span>
+    </div>
+  </div>
+
+  <!-- Contenido real de la página -->
+  <main id="app">
+    <h1>Contenido de ejemplo</h1>
+    <p>Cuando la página termine de cargar, el loader se desvanecerá.</p>
+    <p>Puedes reemplazar este contenido con tu web real.</p>
+
+    <!-- Simulación de contenido lento: quitar en producción -->
+    <section>
+      <p>Imágenes y recursos pesados simulan carga aquí...</p>
+      <img src="https://via.placeholder.com/1200x600?text=Contenido+pesado+ejemplo" alt="">
+    </section>
+  </main>
+
+  <noscript>
+    <style>
+      /* Si JavaScript está deshabilitado: ocultar loader y mostrar contenido */
+      #page-loader { display: none !important; }
+      body { overflow: auto; }
+    </style>
+    <div style="padding:1rem; background:#fff3cd; color:#856404;">
+      JavaScript está deshabilitado — la animación de carga no se mostrará.
+    </div>
+  </noscript>
+
+  <script>
+    // Espera evento load (cuando todos los recursos han terminado de cargar)
+    // Si quieres ocultarlo antes, podrías usar DOMContentLoaded u otra lógica.
+    window.addEventListener('load', function () {
+      const loader = document.getElementById('page-loader');
+      // marcar estado accesible
+      document.body.classList.remove('loading');
+      document.body.setAttribute('aria-busy', 'false');
+
+      // añadir clase que hace fadeout; tras transición, remover del DOM
+      loader.classList.add('hidden');
+
+      // opcional: remover del DOM después de la transición (400ms en CSS)
+      setTimeout(() => {
+        if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
+      }, 500);
+    });
+
+    // Seguridad extra: si algo falla, esconder loader tras X ms (opcional)
+    // Puedes ajustar el tiempo o quitar este bloque.
+    setTimeout(() => {
+      const loader = document.getElementById('page-loader');
+      if (loader) {
+        document.body.classList.remove('loading');
+        document.body.setAttribute('aria-busy', 'false');
+        loader.classList.add('hidden');
+        setTimeout(() => loader.remove(), 600);
+      }
+    }, 10000); // 10s fallback
+  </script>
+</body>
+</html>
+

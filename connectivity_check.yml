@@ -1,0 +1,58 @@
+---
+- name: Validar conectividad hacia los hosts
+  hosts: all
+  gather_facts: no
+  any_errors_fatal: false
+  tasks:
+
+    - name: Probar conectividad con ping de Ansible
+      ansible.builtin.ping:
+      register: ping_result
+      ignore_unreachable: true
+      ignore_errors: yes
+
+    - name: Determinar estado y mensaje
+      set_fact:
+        result_status: >-
+          {% if ping_result.ping is defined %}
+            ok
+          {% else %}
+            failed
+          {% endif %}
+        result_msg: >-
+          {% if ping_result.ping is defined %}
+            exitoso
+          {% elif ping_result.unreachable is defined and ping_result.unreachable %}
+            fallido - unreachable ({{ ping_result.msg | default('No reachable') }})
+          {% elif ping_result.msg is defined and 'Permission denied' in ping_result.msg %}
+            fallido - permiso denegado
+          {% elif ping_result.msg is defined and 'Connection timed out' in ping_result.msg %}
+            fallido - timeout
+          {% elif ping_result.failed is defined and ping_result.failed %}
+            fallido - {{ ping_result.msg | default('Error desconocido') }}
+          {% else %}
+            fallido - desconocido
+          {% endif %}
+      ignore_errors: yes
+
+    - name: Guardar resultados en JSON por host
+      copy:
+        dest: "connectivity_results/{{ inventory_hostname }}.json"
+        content: |
+          {
+            "host": "{{ inventory_hostname }}",
+            "status": "{{ result_status | trim }}",
+            "msg": "{{ result_msg | trim | replace('"', "'") }}"
+          }
+      delegate_to: localhost
+      run_once: false
+      ignore_errors: yes
+
+- name: Insertar resultados en MariaDB
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Ejecutar script de carga en MariaDB
+      command: python3 insertar_reporte.py
+      args:
+        chdir: "{{ playbook_dir }}"

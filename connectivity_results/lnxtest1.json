@@ -1,0 +1,1 @@
+{"host": "lnxtest1", "status": "failed", "msg": "fallido - unreachable (Failed to connect to the host via ssh: ssh: connect to host 192.168.1.136 port 22: No route to host)"}
