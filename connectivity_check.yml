@@ -66,5 +66,4 @@
   tasks:
     - name: Ejecutar script de carga en MariaDB
       command: python3 /connectivity_results/insertar_reporte.py
-      args:
-        chdir: "{{ playbook_dir }}"
+  ignore_errors: yes    
