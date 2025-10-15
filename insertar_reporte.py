@@ -5,9 +5,10 @@ import mysql.connector
 from datetime import datetime
 
 # Configuración de la base de datos
-DB_HOST = "192.168.1.129"
+DB_HOST = "10.110.0.116"
 DB_USER = "root"
 DB_PASS = "Winner2020"
+DB_PORT = 3200
 DB_NAME = "alcance"
 TABLE_NAME = "reporte"
 
@@ -18,6 +19,7 @@ def insert_data(fecha_ejecucion, host, status, msg):
     """Inserta un registro en la tabla reporte"""
     conn = mysql.connector.connect(
         host=DB_HOST,
+        port=DB_PORT,
         user=DB_USER,
         password=DB_PASS,
         database=DB_NAME
