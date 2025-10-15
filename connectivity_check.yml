@@ -37,19 +37,19 @@
 
     - name: Guardar resultados en JSON por host
       copy:
-        dest: "connectivity_results/{{ inventory_hostname }}.json"
+        dest: "/connectivity_results/{{ inventory_hostname }}.json"
         content: |
           {
             "host": "{{ inventory_hostname }}",
             "status": "{{ result_status | trim }}",
             "msg": "{{ result_msg | trim | replace('"', "'") }}"
           }
-      delegate_to: localhost
+      delegate_to: bastion.local.com
       run_once: false
       ignore_errors: yes
 
 - name: Insertar resultados en MariaDB
-  hosts: localhost
+  hosts: bastion.local.com
   gather_facts: no
   tasks:
     - name: Ejecutar script de carga en MariaDB
