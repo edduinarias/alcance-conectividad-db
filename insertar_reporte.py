@@ -12,7 +12,7 @@ DB_NAME = "alcance"
 TABLE_NAME = "reporte"
 
 # Carpeta donde están los JSON generados por Ansible
-RESULTS_DIR = "connectivity_results"
+RESULTS_DIR = "/connectivity_results"
 
 def insert_data(fecha_ejecucion, host, status, msg):
     """Inserta un registro en la tabla reporte"""
