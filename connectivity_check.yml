@@ -44,12 +44,12 @@
             "status": "{{ result_status | trim }}",
             "msg": "{{ result_msg | trim | replace('"', "'") }}"
           }
-      delegate_to: bastion.local.com
+      delegate_to: "{{ controllerserver }}"
       run_once: false
       ignore_errors: yes
 
 - name: Guardar resultados en JSON por host
-  hosts: bastion.local.com
+  hosts: "{{ controllerserver }}"
   gather_facts: no
   tasks:
     - name: Copiar script insertar_reporte.py al Controller
@@ -61,7 +61,7 @@
       ignore_errors: yes
 
 - name: Insertar resultados en MariaDB
-  hosts: bastion.local.com
+  hosts: "{{ controllerserver }}"
   gather_facts: no
   tasks:
     - name: Ejecutar script de carga en MariaDB
