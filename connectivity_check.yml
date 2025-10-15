@@ -53,6 +53,6 @@
   gather_facts: no
   tasks:
     - name: Ejecutar script de carga en MariaDB
-      command: python3 insertar_reporte.py
+      command: python3 /connectivity_results/insertar_reporte.py
       args:
         chdir: "{{ playbook_dir }}"
