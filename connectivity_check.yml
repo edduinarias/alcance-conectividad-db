@@ -48,7 +48,7 @@
       run_once: false
       ignore_errors: yes
 
-- name: Guardar resultados en JSON por host
+- name: Copiar el scrip python al controller
   hosts: "{{ controllerserver }}"
   gather_facts: no
   tasks:
