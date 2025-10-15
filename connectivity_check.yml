@@ -50,11 +50,15 @@
 
 - name: Guardar resultados en JSON por host
   hosts: bastion.local.com
-  copy:
-    source: insertar_reporte.py
-    dest: /connectivity_results/insertar_reporte.py
-  run_once: false
-  ignore_errors: yes
+  gather_facts: no
+  tasks:
+    - name: Copiar script insertar_reporte.py al Controller
+      ansible.builtin.copy:
+        src: insertar_reporte.py
+        dest: /connectivity_results/insertar_reporte.py
+        mode: '0755'
+      run_once: false
+      ignore_errors: yes
 
 - name: Insertar resultados en MariaDB
   hosts: bastion.local.com
